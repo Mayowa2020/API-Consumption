@@ -3,12 +3,12 @@ import "./App.css";
 import Header from "./components/Header";
 
 export default function App() {
-    const [data, setData] = useEffect(null);
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("https://free-nba.p.rapidapi.com/players?page=0&per_page=25", {
+        fetch("https://free-nba.p.rapidapi.com/players?page=0&per_page=100", {
             method: "GET",
             headers: {
                 "x-rapidapi-host": "free-nba.p.rapidapi.com",
@@ -23,7 +23,7 @@ export default function App() {
                 throw response;
             })
             .then((data) => {
-                setData(data);
+                setData(data.data);
             })
             .catch((error) => {
                 console.error("Error fetching data", error);
@@ -34,23 +34,19 @@ export default function App() {
             });
     }, []);
 
-    // if (loading) {
-    //   "Loading players...";
-    // } else
-    // if (error) "Error loading players!";
+    if (loading) return "Loading...";
+    if (error) return "Error!";
 
     return (
         <div className="container">
             <Header />
-            {loading ? (
-                <div>Loading players!</div>
-            ) : (
-                <ul>
-                    {data.map((item) => {
-                        return <li>{item.body}</li>;
-                    })}
-                </ul>
-            )}
+            {data.map((record) => (
+                <div key={record.id} style={{ margin: "30px" }}>
+                    <div>{`Name: ${record.first_name}`}</div>
+                    <div>{`Team_ID: ${record.team.id}`}</div>
+                    {/* {record.first_name}, {record.team.id} */}
+                </div>
+            ))}
         </div>
     );
 }
